@@ -74,7 +74,6 @@ export function useDrawingInteractions({ containerRef, enabled }: Options) {
       // Drawing tools always claim the pointer — nothing else needs it here.
       event.stopImmediatePropagation()
 
-      // ── Edit tool: pick / move / resize existing elements ───────────────
       if (store.tool === 'edit') {
         // 1. Grabbing a handle of the (single) selected element wins.
         const selectedEls = store.elements.filter((el) => store.selectedIds.has(el.id))

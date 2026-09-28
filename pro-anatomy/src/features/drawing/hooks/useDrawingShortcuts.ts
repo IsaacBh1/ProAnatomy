@@ -30,7 +30,6 @@ const isOnButton = (t: EventTarget | null) =>
   t instanceof HTMLElement && t.closest('button, a, [role="button"]') !== null
 
 export function useDrawingShortcuts(): void {
-  // ── Space: hold to orbit ────────────────────────────────────────────────
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.code !== 'Space' || e.repeat) return
@@ -58,7 +57,6 @@ export function useDrawingShortcuts(): void {
     }
   }, [])
 
-  // ── Everything else ─────────────────────────────────────────────────────
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (useUiStore.getState().viewerMode !== 'draw') return
@@ -115,7 +113,6 @@ export function useDrawingShortcuts(): void {
         return
       }
 
-      // ─── Everything below only fires when something is selected. The only
       //     tool that keeps a selection across keydowns is Edit, so these are
       //     the "manipulate the selection" half of the edit experience.
       if (store.selectedIds.size === 0) {
