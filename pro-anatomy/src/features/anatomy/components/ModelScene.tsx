@@ -122,7 +122,6 @@ export function ModelScene({ modelObject, tool }: ModelSceneProps) {
   const drawTool = useDrawingStore((state) => state.tool)
   const isDrawing = viewerMode === 'draw'
 
-  // Same condition in both modes: Select means "organs, band rectangle, no orbit".
   const selectActive = isDrawing ? drawTool === 'select' : tool === 'select'
 
   usePartPicking(root)

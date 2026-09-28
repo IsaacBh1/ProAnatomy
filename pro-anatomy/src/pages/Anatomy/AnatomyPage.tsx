@@ -58,11 +58,6 @@ export default function AnatomyPage() {
         <AnatomyViewer />
         <DrawingCanvas />
 
-        {/*
-          Three columns: sidebar toggle | tool cluster | mode + sex + theme.
-          `gap-6` keeps the center cluster from crowding the right one as the
-          toolbar grows (e.g. in draw mode with a wide DrawingToolbar).
-        */}
         <header className="pointer-events-none absolute inset-x-0 top-[30px] z-30 grid grid-cols-[1fr_auto_1fr] items-center gap-6 px-6">
           <div className="justify-self-start">
             <Pill>
@@ -94,7 +89,6 @@ export default function AnatomyPage() {
             />
           )}
 
-          {/* Order: Mode toggle → Sex → Theme (moved to the far right). */}
           <div className="flex items-center gap-3 justify-self-end">
             <ViewerModeToggle />
             <SexToggle value={sex} onChange={setSex} />

@@ -97,7 +97,7 @@ export function buildModelObject(model: AnatomyModel): ModelObject {
 
 export function disposeModelObject({ entries, materials }: ModelObject): void {
   for (const { mesh, highlightMaterial } of entries.values()) {
-    mesh.geometry.dispose() 
+    mesh.geometry.dispose()
     highlightMaterial?.dispose()
   }
   for (const material of materials) material.dispose()

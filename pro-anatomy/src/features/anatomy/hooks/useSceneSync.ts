@@ -27,10 +27,6 @@ const partStateChanged = (a: PartState, b: PartState) =>
   a.hiddenIds !== b.hiddenIds ||
   a.explode !== b.explode
 
-/**
- * Keeps the meshes in sync with the stores. Zustand notifies synchronously, so by the time a
- * command finishes, the scene is already up to date. That lets it read mesh state safely.
- */
 export function useSceneSync(entries: ModelObject['entries']): void {
   const invalidate = useThree((state) => state.invalidate)
 

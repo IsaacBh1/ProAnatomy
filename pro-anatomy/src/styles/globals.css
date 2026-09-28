@@ -64,3 +64,66 @@ body {
   height: 0;
   background: transparent;
 }
+
+/*
+ * Vertical depth slider.
+ *
+ * `appearance: slider-vertical` + `writing-mode` is the standardised pair for a
+ * vertical native range. The track and thumb are drawn from scratch: the track is
+ * invisible (the visible track is a sibling div) and the thumb is the wide
+ * translucent bar from the Zygote reference.
+ */
+.depth-slider {
+  appearance: slider-vertical;
+  -webkit-appearance: slider-vertical;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  background: transparent;
+  outline: none;
+  touch-action: none;
+}
+
+.depth-slider::-webkit-slider-runnable-track {
+  width: 24px;
+  background: transparent;
+  border: none;
+}
+
+.depth-slider::-moz-range-track {
+  width: 24px;
+  background: transparent;
+  border: none;
+}
+
+.depth-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 51px;
+  height: 10px;
+  margin-left: -13.5px; /* (24 − 51) / 2 — centres the wider thumb on the track */
+  border: none;
+  border-radius: 3px;
+  background: var(--color-content);
+  opacity: 0.7;
+  cursor: ns-resize;
+  transition: opacity 120ms ease;
+}
+
+.depth-slider::-webkit-slider-thumb:hover {
+  opacity: 0.95;
+}
+
+.depth-slider::-moz-range-thumb {
+  width: 51px;
+  height: 10px;
+  border: none;
+  border-radius: 3px;
+  background: var(--color-content);
+  opacity: 0.7;
+  cursor: ns-resize;
+  transition: opacity 120ms ease;
+}
+
+.depth-slider::-moz-range-thumb:hover {
+  opacity: 0.95;
+}
