@@ -53,6 +53,11 @@ interface DrawingState {
 
   snapshot: () => void
   applyTransient: (updater: (elements: readonly DrawElement[]) => DrawElement[]) => void
+  applySurfaceTransient: (
+    updater: (strokes: readonly SurfaceStroke[]) => readonly SurfaceStroke[],
+  ) => void
+  /** Nudges every selected element/ stroke by (dx, dy, dz) in one shot. */
+  translateSelection: (dx: number, dy: number, dz?: number) => void
   replaceElements: (elements: readonly DrawElement[]) => void
 
   addElement: (element: DrawElement) => void
@@ -97,8 +102,8 @@ export const useDrawingStore = create<DrawingState>()((set) => ({
   past: [],
   future: [],
 
-  // Tool switch aborts every in-flight gesture and drops the drawn selection — the
-  // selection belongs to the tool that made it.
+  // Tool switch aborts every in-flight gesture and drops the drawn selection —
+  // the selection belongs to the tool that made it.
   setTool: (tool) =>
     set({
       tool,
@@ -184,11 +189,40 @@ export const useDrawingStore = create<DrawingState>()((set) => ({
       return { selectedIds: next.size > 0 ? next : NO_IDS }
     }),
 
-  selectAll: () => set((s) => ({ selectedIds: new Set(s.elements.map((el) => el.id)) })),
+  selectAll: () =>
+    set((s) => ({
+      // Both arrays: their ids share a namespace, and both are visible in their
+      // respective space. Ctrl+A is a "select everything I can edit right now"
+      // gesture, and the user can only be in one space at a time.
+      selectedIds: new Set([
+        ...s.elements.map((el) => el.id),
+        ...s.surfaceStrokes.map((st) => st.id),
+      ]),
+    })),
   clearSelection: () => set((s) => (s.selectedIds.size === 0 ? s : { selectedIds: NO_IDS })),
 
   snapshot: () => set((s) => ({ past: trim([...s.past, snapshotOf(s)]), future: [] })),
   applyTransient: (updater) => set((s) => ({ elements: updater(s.elements) })),
+  applySurfaceTransient: (updater) => set((s) => ({ surfaceStrokes: updater(s.surfaceStrokes) })),
+
+  translateSelection: (dx, dy, dz = 0) =>
+    set((s) => {
+      if (s.selectedIds.size === 0) return s
+      return {
+        elements: s.elements.map((el) =>
+          s.selectedIds.has(el.id) ? translateElement(el, dx, dy) : el,
+        ),
+        surfaceStrokes: s.surfaceStrokes.map((st) =>
+          s.selectedIds.has(st.id)
+            ? {
+                ...st,
+                points: st.points.map(([x, y, z]): Vec3 => [x + dx, y + dy, z + dz]),
+              }
+            : st,
+        ),
+      }
+    }),
+
   replaceElements: (elements) =>
     set((s) => ({ elements, past: trim([...s.past, snapshotOf(s)]), future: [] })),
 

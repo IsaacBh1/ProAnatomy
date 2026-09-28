@@ -51,11 +51,7 @@ export const SELECTION_TOOLS: readonly ToolDef[] = [
   { id: 'select', label: 'Select', key: 'V' },
 ]
 
-/**
- * Edit mode. Not a "create" tool — it manipulates elements already on the canvas.
- * Sits next to Select in the toolbar because they're the same kind of verb: pick a
- * thing. `X` is free (E is eraser, V is Select).
- */
+/** Edit. Manipulates elements already on the canvas. */
 export const EDIT_TOOLS: readonly ToolDef[] = [
   { id: 'edit', label: 'Edit', key: 'X' },
 ]
@@ -71,8 +67,8 @@ export const DRAWING_TOOLS: readonly ToolDef[] = [
 ]
 
 /**
- * Tools whose style matters (shows the style panel). Deliberately does NOT include
- * `edit` — editing changes geometry, not the look of new strokes.
+ * Tools whose style matters (shows the style panel). Deliberately excludes `edit`
+ * — editing changes geometry, not the look of new strokes.
  */
 export const STYLE_TOOLS: ReadonlySet<ToolId> = new Set([
   'brush',
@@ -85,11 +81,9 @@ export const STYLE_TOOLS: ReadonlySet<ToolId> = new Set([
 ])
 
 /**
- * Tools handled by `useDrawingInteractions`. Does NOT include `select`, so the
- * drawing pointer hook is disabled while Select is active and the events flow to
- * explore's picking / band-select / shortcuts unchanged.
- *
- * `edit` IS included: it needs the same pointer channel that brush/line use.
+ * Tools handled by the screen-space drawing hook (`useDrawingInteractions`).
+ * Deliberately does NOT include `select`, so the hook stays silent and every
+ * pointer/keyboard gesture goes to explore's picking / band-select / shortcuts.
  */
 export const ELEMENT_TOOLS: ReadonlySet<ToolId> = new Set([
   'edit',
@@ -102,4 +96,13 @@ export const ELEMENT_TOOLS: ReadonlySet<ToolId> = new Set([
   'text',
 ])
 
-export const SURFACE_TOOLS: ReadonlySet<ToolId> = new Set(['brush', 'eraser'])
+/**
+ * Tools handled by the surface drawing hook (`SurfaceDrawingSurface`).
+ *
+ *   brush   — raycasts against the model, accumulates points into a stroke
+ *   eraser  — raycasts against existing surface strokes, deletes the pick
+ *   edit    — picks a stroke, selects it, drag-translates it on a camera plane
+ *
+ * Other drawing tools are intentionally absent: they have no 3D analogue.
+ */
+export const SURFACE_TOOLS: ReadonlySet<ToolId> = new Set(['brush', 'eraser', 'edit'])

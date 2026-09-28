@@ -2,7 +2,6 @@
 import { useEffect } from 'react'
 import { useUiStore } from '@/store/uiStore'
 import { useDrawingStore } from '../store/drawingStore'
-import { translateElement } from '../utils/geometry'
 import type { ToolId } from '../types'
 
 const TOOL_KEYS: Record<string, ToolId> = {
@@ -116,11 +115,9 @@ export function useDrawingShortcuts(): void {
         return
       }
 
-      // ─── Everything below only fires when a drawn element is selected.
-      //     Select/Eraser/Brush etc. clear the drawn selection on switch, so
-      //     these branches are only reachable from the Edit tool. They are the
-      //     "manipulate the selection" half of the edit experience — the other
-      //     half lives in useDrawingInteractions (pointer move/resize).
+      // ─── Everything below only fires when something is selected. The only
+      //     tool that keeps a selection across keydowns is Edit, so these are
+      //     the "manipulate the selection" half of the edit experience.
       if (store.selectedIds.size === 0) {
         // Let Enter, Delete, Backspace, arrows, Escape, Shift+H/L/B, N, P,
         // F/S/R/L/B/T pass straight through to explore's shortcut handler.
@@ -157,11 +154,10 @@ export function useDrawingShortcuts(): void {
       if (dx || dy) {
         event.preventDefault()
         claim()
-        const selected = store.selectedIds
+        // translateSelection handles both 2D elements and 3D surface strokes in
+        // a single set() — one snapshot, one undo step, no double history entry.
         store.snapshot()
-        store.applyTransient((els) =>
-          els.map((el) => (selected.has(el.id) ? translateElement(el, dx, dy) : el)),
-        )
+        store.translateSelection(dx, dy)
       }
     }
 

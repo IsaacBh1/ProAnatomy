@@ -23,7 +23,13 @@ import type { Icon } from '@phosphor-icons/react'
 import { Button, Pill, Tooltip } from '@/components/ui'
 import { openSnapshot } from '@/features/anatomy/services/viewCommands'
 import { useUiStore, type DrawingSpace } from '@/store/uiStore'
-import { CAMERA_TOOLS, DRAWING_TOOLS, EDIT_TOOLS, SELECTION_TOOLS } from '../constants'
+import {
+  CAMERA_TOOLS,
+  DRAWING_TOOLS,
+  EDIT_TOOLS,
+  SELECTION_TOOLS,
+  SURFACE_TOOLS,
+} from '../constants'
 import { useDrawingStore } from '../store/drawingStore'
 import type { ToolId } from '../types'
 import { cn } from '@/utils/cn'
@@ -147,6 +153,7 @@ export function DrawingToolbar() {
 
         <div className="mx-1 h-6 w-px bg-border" aria-hidden />
 
+        {/* Create group. Dimmed when the tool can't act in the current space. */}
         {DRAWING_TOOLS.map(({ id, label, key }) => (
           <ToolButton
             key={id}
@@ -154,7 +161,7 @@ export function DrawingToolbar() {
             label={label}
             shortcut={key}
             active={tool === id}
-            dimmed={drawingSpace === 'surface' && id !== 'brush' && id !== 'eraser'}
+            dimmed={drawingSpace === 'surface' && !SURFACE_TOOLS.has(id)}
             onClick={() => setTool(id)}
           />
         ))}

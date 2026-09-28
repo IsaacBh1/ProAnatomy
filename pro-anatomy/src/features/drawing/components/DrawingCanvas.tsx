@@ -13,6 +13,10 @@ import { TextEditor } from './TextEditor'
  * picking, band select, orbit) is dispatched to the WebGL canvas underneath.
  * `useDrawingInteractions` decides, per pointerdown, whether to claim it.
  *
+ * The screen layer only handles screen-space gestures. When the drawing space is
+ * `surface`, `SurfaceDrawingSurface` owns the pointer instead — the two are
+ * mutually exclusive by design, so the screen layer simply doesn't bind.
+ *
  * The `<TextEditor>` is a plain sibling: its `<input>` re-enables pointer events
  * itself (see TextEditor.tsx), so it's clickable and focusable like any DOM input.
  */
@@ -24,12 +28,11 @@ export function DrawingCanvas() {
   const tool = useDrawingStore((s) => s.tool)
   const editingTextId = useDrawingStore((s) => s.editingTextId)
 
-  // Edit works in both spaces — it operates on already-committed elements, so the
-  // "which space will the next stroke go into" question doesn't apply to it.
   const isScreenDrawing =
     viewerMode === 'draw' &&
+    drawingSpace === 'screen' &&
     !orbitOverride &&
-    (tool === 'edit' || (drawingSpace === 'screen' && ELEMENT_TOOLS.has(tool)))
+    ELEMENT_TOOLS.has(tool)
 
   useDrawingInteractions({ containerRef, enabled: isScreenDrawing })
 
