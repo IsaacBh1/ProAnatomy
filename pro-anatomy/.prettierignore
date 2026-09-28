@@ -1,0 +1,5 @@
+dist
+node_modules
+public/models
+package-lock.json
+public/draco

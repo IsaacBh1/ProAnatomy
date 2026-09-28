@@ -1,0 +1,21 @@
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --color-canvas: #1e1e1e;
+  --color-surface: #252525;
+  --color-surface-raised: #2e2e2e;
+  --color-border: #3a3a3a;
+  --color-content: #d0d0d0;
+  --color-muted: #a0a0a0;
+}
+
+/* Light theme. Applied by <html data-theme="light">. */
+:root[data-theme='light'] {
+  --color-content: #1a1d21;
+  --color-canvas: #f4f5f7;
+  --color-surface: #ffffff;
+  --color-surface-raised: #eef0f3;
+  --color-border: #d8dce1;
+  --color-muted: #6b7280;
+}

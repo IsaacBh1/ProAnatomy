@@ -1,0 +1,66 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/space-grotesk';
+@import './variables.css';
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-content);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.slider {
+  height: 6px;
+  width: 100%;
+  cursor: pointer;
+  appearance: none;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--color-content) var(--slider-progress, 0%),
+    color-mix(in srgb, var(--color-content) 15%, transparent) var(--slider-progress, 0%)
+  );
+}
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--color-content);
+}
+.slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--color-content);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+/*
+ * The sidebar scrolls but hides its scrollbar, so the design's right edge stays clean.
+ * Scrolling itself is untouched: wheel, trackpad, keyboard and touch all still work.
+ */
+.scrollbar-hidden {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* old Edge / IE, harmless elsewhere */
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  background: transparent;
+}
