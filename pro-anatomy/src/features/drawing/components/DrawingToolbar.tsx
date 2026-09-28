@@ -17,12 +17,13 @@ import {
   MagnifyingGlassPlus,
   VectorThreeIcon,
   Selection,
+  PenNib,
 } from '@phosphor-icons/react'
 import type { Icon } from '@phosphor-icons/react'
 import { Button, Pill, Tooltip } from '@/components/ui'
 import { openSnapshot } from '@/features/anatomy/services/viewCommands'
 import { useUiStore, type DrawingSpace } from '@/store/uiStore'
-import { CAMERA_TOOLS, DRAWING_TOOLS, SELECTION_TOOLS } from '../constants'
+import { CAMERA_TOOLS, DRAWING_TOOLS, EDIT_TOOLS, SELECTION_TOOLS } from '../constants'
 import { useDrawingStore } from '../store/drawingStore'
 import type { ToolId } from '../types'
 import { cn } from '@/utils/cn'
@@ -32,6 +33,7 @@ const ICONS: Record<ToolId, Icon> = {
   zoom: MagnifyingGlassPlus,
   pan: Hand,
   select: Selection,
+  edit: PenNib,
   brush: PaintBrush,
   eraser: Eraser,
   line: Minus,
@@ -121,7 +123,18 @@ export function DrawingToolbar() {
 
         <div className="mx-1 h-6 w-px bg-border" aria-hidden />
 
+        {/* Pick group: Select (organs) + Edit (drawn elements). */}
         {SELECTION_TOOLS.map(({ id, label, key }) => (
+          <ToolButton
+            key={id}
+            id={id}
+            label={label}
+            shortcut={key}
+            active={tool === id}
+            onClick={() => setTool(id)}
+          />
+        ))}
+        {EDIT_TOOLS.map(({ id, label, key }) => (
           <ToolButton
             key={id}
             id={id}

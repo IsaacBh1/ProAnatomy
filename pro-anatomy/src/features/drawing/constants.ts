@@ -51,6 +51,15 @@ export const SELECTION_TOOLS: readonly ToolDef[] = [
   { id: 'select', label: 'Select', key: 'V' },
 ]
 
+/**
+ * Edit mode. Not a "create" tool — it manipulates elements already on the canvas.
+ * Sits next to Select in the toolbar because they're the same kind of verb: pick a
+ * thing. `X` is free (E is eraser, V is Select).
+ */
+export const EDIT_TOOLS: readonly ToolDef[] = [
+  { id: 'edit', label: 'Edit', key: 'X' },
+]
+
 export const DRAWING_TOOLS: readonly ToolDef[] = [
   { id: 'brush', label: 'Brush', key: 'B' },
   { id: 'eraser', label: 'Eraser', key: 'E' },
@@ -61,7 +70,10 @@ export const DRAWING_TOOLS: readonly ToolDef[] = [
   { id: 'text', label: 'Text', key: 'T' },
 ]
 
-/** Tools whose style matters (shows the style panel). */
+/**
+ * Tools whose style matters (shows the style panel). Deliberately does NOT include
+ * `edit` — editing changes geometry, not the look of new strokes.
+ */
 export const STYLE_TOOLS: ReadonlySet<ToolId> = new Set([
   'brush',
   'eraser',
@@ -73,11 +85,14 @@ export const STYLE_TOOLS: ReadonlySet<ToolId> = new Set([
 ])
 
 /**
- * Tools handled by `useDrawingInteractions`. Deliberately does NOT include `select`,
- * so the drawing pointer hook is disabled whenever Select is active and the events
- * flow to explore's picking / band-select / shortcuts unchanged.
+ * Tools handled by `useDrawingInteractions`. Does NOT include `select`, so the
+ * drawing pointer hook is disabled while Select is active and the events flow to
+ * explore's picking / band-select / shortcuts unchanged.
+ *
+ * `edit` IS included: it needs the same pointer channel that brush/line use.
  */
 export const ELEMENT_TOOLS: ReadonlySet<ToolId> = new Set([
+  'edit',
   'brush',
   'eraser',
   'line',

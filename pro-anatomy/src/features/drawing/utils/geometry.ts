@@ -97,7 +97,6 @@ export function hitTest(el: DrawElement, p: Point, tolerance = HIT_TOLERANCE): b
       const inside =
         p.x >= b.x && p.x <= b.x + b.width && p.y >= b.y && p.y <= b.y + b.height
       if (!inside) return false
-      // If filled, the whole box is a hit. Otherwise only near the border.
       if (el.style.fill) return true
       const nearLeft = Math.abs(p.x - b.x) <= tolerance + el.style.strokeWidth
       const nearRight = Math.abs(p.x - (b.x + b.width)) <= tolerance + el.style.strokeWidth
@@ -113,7 +112,6 @@ export function hitTest(el: DrawElement, p: Point, tolerance = HIT_TOLERANCE): b
       const d = nx * nx + ny * ny
       if (d > 1.3) return false
       if (el.style.fill) return true
-      // Ring: keep only points near the boundary.
       return Math.abs(Math.sqrt(d) - 1) <= (tolerance + el.style.strokeWidth) / Math.min(e.rx, e.ry)
     }
     case 'text': {
@@ -151,6 +149,11 @@ const cornerHandles = (b: Bbox): Handle[] => [
   { id: 'sw', x: b.x, y: b.y + b.height, cursor: 'nesw-resize' },
 ]
 
+/**
+ * Resize handles for the given element. Text and freehand have none: text is
+ * moved by dragging its body, and freehand geometry has no natural control
+ * points in the current model.
+ */
 export function handlesOf(el: DrawElement): Handle[] {
   switch (el.type) {
     case 'line':
@@ -164,7 +167,7 @@ export function handlesOf(el: DrawElement): Handle[] {
     case 'ellipse':
       return cornerHandles(bboxOf(el))
     case 'text':
-      return [{ id: 'move', x: el.x, y: el.y, cursor: 'move' }]
+      return []
     case 'freehand':
       return []
   }

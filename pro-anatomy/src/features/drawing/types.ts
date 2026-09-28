@@ -58,15 +58,15 @@ export type DrawElementType = DrawElement['type']
  *
  *   orbit/zoom/pan — same as explore, same shortcuts (O/Z/H)
  *   select         — same as explore, same shortcut (V). Organs only.
+ *   edit           — manipulate drawn elements: select, move, resize (X)
  *   brush/eraser/line/arrow/rect/ellipse/text — create/remove annotations.
- *
- * There is intentionally no "edit drawings" tool yet — that design is TBD.
  */
 export type ToolId =
   | 'orbit'
   | 'zoom'
   | 'pan'
   | 'select'
+  | 'edit'
   | 'brush'
   | 'eraser'
   | 'line'

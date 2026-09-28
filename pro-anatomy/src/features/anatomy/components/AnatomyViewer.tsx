@@ -43,6 +43,7 @@ const DRAW_CURSOR: Record<DrawToolId, string> = {
   zoom: 'cursor-zoom-in',
   pan: 'cursor-grab active:cursor-grabbing',
   select: 'cursor-crosshair',
+  edit: 'cursor-default',
   brush: 'cursor-crosshair',
   eraser: 'cursor-cell',
   line: 'cursor-crosshair',

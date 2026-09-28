@@ -24,11 +24,12 @@ export function DrawingCanvas() {
   const tool = useDrawingStore((s) => s.tool)
   const editingTextId = useDrawingStore((s) => s.editingTextId)
 
+  // Edit works in both spaces — it operates on already-committed elements, so the
+  // "which space will the next stroke go into" question doesn't apply to it.
   const isScreenDrawing =
     viewerMode === 'draw' &&
-    drawingSpace === 'screen' &&
     !orbitOverride &&
-    ELEMENT_TOOLS.has(tool)
+    (tool === 'edit' || (drawingSpace === 'screen' && ELEMENT_TOOLS.has(tool)))
 
   useDrawingInteractions({ containerRef, enabled: isScreenDrawing })
 

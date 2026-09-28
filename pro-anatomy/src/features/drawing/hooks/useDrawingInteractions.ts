@@ -1,5 +1,6 @@
 // src/features/drawing/hooks/useDrawingInteractions.ts
 import { useEffect, type RefObject } from 'react'
+import { HANDLE_HIT } from '../constants'
 import { useDrawingStore, createId } from '../store/drawingStore'
 import type {
   ArrowElement,
@@ -11,12 +12,19 @@ import type {
   RectElement,
   TextElement,
 } from '../types'
-import { findTopElementAt } from '../utils/geometry'
+import {
+  applyHandleDrag,
+  findTopElementAt,
+  handlesOf,
+  translateElement,
+} from '../utils/geometry'
 
 type Interaction =
   | { kind: 'idle' }
   | { kind: 'drafting' }
   | { kind: 'erasing' }
+  | { kind: 'moving'; start: Point; originals: Map<string, DrawElement> }
+  | { kind: 'resizing'; origin: DrawElement; handleId: string }
 
 interface Options {
   containerRef: RefObject<HTMLElement | null>
@@ -24,11 +32,12 @@ interface Options {
 }
 
 /**
- * Owns drawing-tool pointer interactions: brush, line, arrow, rect, ellipse, text,
- * eraser.
+ * Owns every screen-space drawing interaction: brush, line, arrow, rect, ellipse,
+ * text, eraser, and — since the Edit tool landed — selecting, moving, and resizing
+ * existing elements.
  *
  * NOT enabled when the Select tool is active (the parent gates on `ELEMENT_TOOLS`).
- * So when Select is on, this hook is silent and every pointer/keyboard gesture is
+ * When Select is on, this hook stays silent and every pointer/keyboard gesture is
  * handled by the same code as explore mode — part picking, band rectangle, Enter,
  * Backspace, Shift+H, the context menu, and so on.
  */
@@ -41,19 +50,68 @@ export function useDrawingInteractions({ containerRef, enabled }: Options) {
     if (!canvas) return
 
     let interaction: Interaction = { kind: 'idle' }
+    // History is pushed lazily on the first real movement, so a plain click that
+    // only changes selection never leaves a no-op undo step behind.
+    let dirty = false
 
     const localPoint = (event: PointerEvent): Point => {
       const rect = svgWrapper.getBoundingClientRect()
       return { x: event.clientX - rect.left, y: event.clientY - rect.top }
     }
 
+    const ensureSnapshot = () => {
+      if (dirty) return
+      useDrawingStore.getState().snapshot()
+      dirty = true
+    }
+
     const onPointerDown = (event: PointerEvent) => {
       if (event.button !== 0) return
       const store = useDrawingStore.getState()
       const p = localPoint(event)
+      dirty = false
 
       // Drawing tools always claim the pointer — nothing else needs it here.
       event.stopImmediatePropagation()
+
+      // ── Edit tool: pick / move / resize existing elements ───────────────
+      if (store.tool === 'edit') {
+        // 1. Grabbing a handle of the (single) selected element wins.
+        const selectedEls = store.elements.filter((el) => store.selectedIds.has(el.id))
+        const single = selectedEls.length === 1 ? selectedEls[0] : null
+        if (single) {
+          for (const handle of handlesOf(single)) {
+            if (Math.hypot(p.x - handle.x, p.y - handle.y) <= HANDLE_HIT) {
+              canvas.setPointerCapture(event.pointerId)
+              interaction = { kind: 'resizing', origin: single, handleId: handle.id }
+              return
+            }
+          }
+        }
+
+        // 2. Hit-test the elements themselves.
+        const hit = findTopElementAt(store.elements, p)
+        if (!hit) {
+          if (!event.shiftKey) store.clearSelection()
+          return
+        }
+
+        if (event.shiftKey) {
+          store.selectElement(hit.id, true)
+        } else if (!store.selectedIds.has(hit.id)) {
+          store.selectElement(hit.id)
+        }
+
+        // 3. Start a drag-move of everything currently selected. The originals
+        //    map lets us re-derive positions from the pre-drag state on every
+        //    pointermove, so the drag never compounds.
+        const ids = new Set(useDrawingStore.getState().selectedIds)
+        const originals = new Map<string, DrawElement>()
+        for (const el of store.elements) if (ids.has(el.id)) originals.set(el.id, el)
+        canvas.setPointerCapture(event.pointerId)
+        interaction = { kind: 'moving', start: p, originals }
+        return
+      }
 
       const hit = findTopElementAt(store.elements, p)
 
@@ -99,6 +157,28 @@ export function useDrawingInteractions({ containerRef, enabled }: Options) {
       if (interaction.kind === 'erasing') {
         const hit = findTopElementAt(store.elements, p)
         if (hit) store.deleteElements([hit.id])
+        return
+      }
+
+      if (interaction.kind === 'moving') {
+        const dx = p.x - interaction.start.x
+        const dy = p.y - interaction.start.y
+        if (dx === 0 && dy === 0) return
+        ensureSnapshot()
+        const originals = interaction.originals
+        store.applyTransient((els) =>
+          els.map((el) => {
+            const orig = originals.get(el.id)
+            return orig ? translateElement(orig, dx, dy) : el
+          }),
+        )
+        return
+      }
+
+      if (interaction.kind === 'resizing') {
+        ensureSnapshot()
+        const updated = applyHandleDrag(interaction.origin, interaction.handleId, p)
+        store.applyTransient((els) => els.map((el) => (el.id === updated.id ? updated : el)))
       }
     }
 
@@ -108,6 +188,7 @@ export function useDrawingInteractions({ containerRef, enabled }: Options) {
       if (canvas.hasPointerCapture(event.pointerId)) {
         canvas.releasePointerCapture(event.pointerId)
       }
+
       if (interaction.kind === 'drafting') {
         const d = store.draft
         const isEmpty =
@@ -120,7 +201,9 @@ export function useDrawingInteractions({ containerRef, enabled }: Options) {
         if (isEmpty) store.setDraft(null)
         else store.commitDraft()
       }
+
       interaction = { kind: 'idle' }
+      dirty = false
     }
 
     canvas.addEventListener('pointerdown', onPointerDown, { capture: true })

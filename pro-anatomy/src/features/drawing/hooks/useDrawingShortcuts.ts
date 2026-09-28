@@ -10,6 +10,7 @@ const TOOL_KEYS: Record<string, ToolId> = {
   z: 'zoom',
   h: 'pan',
   v: 'select',
+  x: 'edit',
   b: 'brush',
   e: 'eraser',
   l: 'line',
@@ -116,9 +117,10 @@ export function useDrawingShortcuts(): void {
       }
 
       // ─── Everything below only fires when a drawn element is selected.
-      //     Since the Edit tool is currently disabled, `selectedIds` is always
-      //     empty in draw mode, so these branches are inert. They're kept as
-      //     scaffolding for the upcoming Edit feature.
+      //     Select/Eraser/Brush etc. clear the drawn selection on switch, so
+      //     these branches are only reachable from the Edit tool. They are the
+      //     "manipulate the selection" half of the edit experience — the other
+      //     half lives in useDrawingInteractions (pointer move/resize).
       if (store.selectedIds.size === 0) {
         // Let Enter, Delete, Backspace, arrows, Escape, Shift+H/L/B, N, P,
         // F/S/R/L/B/T pass straight through to explore's shortcut handler.
