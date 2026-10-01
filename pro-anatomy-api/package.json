@@ -1,11 +1,14 @@
 {
   "name": "pro-anatomy-api",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
-    "dev": "tsx watch --env-file=.env src/server.ts",
-    "start": "tsx --env-file=.env src/server.ts",
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
     "typecheck": "tsc --noEmit",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
@@ -13,7 +16,9 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "build": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",
@@ -28,7 +33,8 @@
     "jose": "^6.0.10",
     "pino": "^9.6.0",
     "pino-http": "^10.4.0",
-    "zod": "^3.24.2"
+    "zod": "^3.24.2",
+    "tsx": "^4.19.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
@@ -37,7 +43,6 @@
     "@types/node": "^22.13.0",
     "pino-pretty": "^13.0.0",
     "prisma": "^6.5.0",
-    "tsx": "^4.19.0",
     "typescript": "^5.7.3"
   }
 }
