@@ -141,4 +141,6 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
-pro-anatomy/src/features/drawing/hooks/useDrawingShortcuts.ts
+
+*/dist
+project_output
