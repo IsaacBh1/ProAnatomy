@@ -2,7 +2,7 @@
 import { Vector2, type Camera, type Scene, type WebGLRenderer } from 'three'
 import { readCssVar } from '@/utils/cssVar'
 import type { LabelItem } from '../types/labels'
-import type { CaptureOptions } from '../types/snapshot'
+import type { CaptureOptions, CaptureResult } from '../types/snapshot'
 import { drawLabels, drawWatermark, type CanvasPalette } from './drawOverlays'
 
 interface RenderContext {
@@ -30,19 +30,21 @@ const loadImage = (src: string): Promise<HTMLImageElement> =>
 
 /**
  * Rasterises the drawing overlay onto the snapshot canvas. Reads the always-mounted
- * `[data-drawing-surface] svg`, strips the selection overlay (it's a UI affordance, not
- * content), then draws it at the snapshot's pixel size.
+ * `[data-drawing-surface] svg`, strips the selection overlay (it's a UI affordance,
+ * not content), then draws it at the snapshot's pixel size.
  *
- * Never throws: a compositing failure degrades to "3D only", which is still useful.
+ * Returns false when compositing failed. The caller decides whether that's worth
+ * surfacing to the user — it's usually silent, but a snapshot that the user
+ * *believes* includes their annotations and doesn't is worse than a warning.
  */
 async function compositeDrawings(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
-): Promise<void> {
+): Promise<boolean> {
   const wrapper = document.querySelector<HTMLElement>('[data-drawing-surface]')
   const svg = wrapper?.querySelector('svg')
-  if (!svg) return
+  if (!svg) return true // nothing drawn: not a failure
 
   const clone = svg.cloneNode(true) as SVGSVGElement
   clone.querySelectorAll('[data-layer="selection"]').forEach((el) => el.remove())
@@ -59,8 +61,10 @@ async function compositeDrawings(
   try {
     const img = await loadImage(url)
     ctx.drawImage(img, 0, 0, width, height)
+    return true
   } catch (err) {
     console.warn('[capture] drawing overlay compositing failed:', err)
+    return false
   } finally {
     URL.revokeObjectURL(url)
   }
@@ -70,14 +74,15 @@ async function compositeDrawings(
  * Re-renders the scene at `options.scale` times the on-screen size and composites
  * background, drawing overlay, labels and watermark on top.
  *
- * IMPORTANT: the WebGL renderer is resized and then restored synchronously — before any
- * `await` — so a stalled compositing step can never leave the live canvas in a bad state.
+ * IMPORTANT: the WebGL renderer is resized and then restored synchronously — before
+ * any `await` — so a stalled compositing step can never leave the live canvas in a
+ * bad state.
  */
 export async function captureViewport(
   { gl, scene, camera }: RenderContext,
   options: CaptureOptions,
   labels: readonly LabelItem[],
-): Promise<HTMLCanvasElement> {
+): Promise<CaptureResult> {
   const size = gl.getSize(new Vector2()) // CSS px
   const previousRatio = gl.getPixelRatio()
   const scale = Math.min(options.scale, gl.capabilities.maxTextureSize / Math.max(size.x, size.y))
@@ -113,10 +118,12 @@ export async function captureViewport(
   }
 
   // --- Async compositing (renderer already back to normal) ---
-  await compositeDrawings(ctx, output.width, output.height)
+  const warnings: string[] = []
+  const drawingsEmbedded = await compositeDrawings(ctx, output.width, output.height)
+  if (!drawingsEmbedded) warnings.push('Annotations could not be embedded.')
 
   if (labels.length > 0) drawLabels(ctx, labels, ratio, palette)
   if (options.watermark) drawWatermark(ctx, output.width, output.height, ratio, palette)
 
-  return output
+  return { canvas: output, warnings }
 }

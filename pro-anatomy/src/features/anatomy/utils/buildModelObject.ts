@@ -9,7 +9,11 @@ import {
 } from 'three'
 import { SKIN_OPACITY } from '../constants/viewer'
 import type { AnatomyModel, AnatomyPart } from '../types/model'
+import { buildBvh, disposeBvh, installBvhRaycast } from './bvh'
 import { partColor, partColorBucket } from './partColor'
+
+// Patch Three's prototypes once, at module load. Idempotent.
+installBvhRaycast()
 
 export type PartMesh = Mesh<BufferGeometry, MeshStandardMaterial>
 
@@ -73,6 +77,10 @@ export function buildModelObject(model: AnatomyModel): ModelObject {
       material = cached
     }
 
+    // Build the BVH once, up front. The cost is a one-time O(n log n) pass at
+    // load; every subsequent hover raycast is O(log n).
+    buildBvh(part.geometry)
+
     const mesh: PartMesh = new Mesh(part.geometry, material)
     mesh.userData.partId = part.id
     mesh.renderOrder = isSkin ? 10 : 0
@@ -97,6 +105,7 @@ export function buildModelObject(model: AnatomyModel): ModelObject {
 
 export function disposeModelObject({ entries, materials }: ModelObject): void {
   for (const { mesh, highlightMaterial } of entries.values()) {
+    disposeBvh(mesh.geometry)
     mesh.geometry.dispose()
     highlightMaterial?.dispose()
   }

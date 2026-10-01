@@ -7,7 +7,6 @@ export { LayersPanel } from './components/LayersPanel'
 export { ViewerModeToggle } from './components/ViewerModeToggle'
 export { SurfaceDrawingSurface } from './components/SurfaceDrawingSurface'
 export { SurfaceDrawingLayer } from './components/SurfaceDrawingLayer'
-export { useDrawingShortcuts } from './hooks/useDrawingShortcuts'
 export { useDrawingStore } from './store/drawingStore'
 export type {
   DrawElement,

@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { X } from '@phosphor-icons/react'
+import { useUiStore } from '@/store/uiStore'
 import { cn } from '@/utils/cn'
 import { Button } from '../Button/Button'
 
@@ -22,6 +23,16 @@ export function Modal({ open, onClose, title, description, children, className }
     if (!dialog) return
     if (open && !dialog.open) dialog.showModal()
     else if (!open && dialog.open) dialog.close()
+  }, [open])
+
+  // Tell the rest of the app a dialog is up so global shortcut handlers stand down.
+  // The counter handles overlapping dialogs correctly, and StrictMode's double
+  // mount/unmount cycle nets out to a single increment.
+  useEffect(() => {
+    if (!open) return
+    const { pushDialog, popDialog } = useUiStore.getState()
+    pushDialog()
+    return () => popDialog()
   }, [open])
 
   return (

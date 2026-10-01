@@ -27,14 +27,23 @@ export function usePresets() {
 
   // Custom presets store raw part ids. Keep only ids that exist in the loaded model, so a
   // preset made for one body degrades to nothing (rather than breaking) on the other.
+  // `missingCount` records how many parts were dropped, so the sidebar can warn the user
+  // instead of silently shrinking the preset.
   const custom = useMemo<readonly AvailablePreset[]>(() => {
     if (!model) return NONE
     const known = new Set(model.parts.map((part) => part.id))
-    return stored.flatMap(({ id, name, partIds }) => {
+    return stored.flatMap(({ id, name, partIds, createdPartCount }) => {
       const live = partIds.filter((partId) => known.has(partId))
-      return live.length > 0
-        ? [{ preset: { id, label: name, matchNames: [] }, partIds: live }]
-        : []
+      if (live.length === 0) return []
+      const original = createdPartCount ?? partIds.length
+      const missing = original - live.length
+      return [
+        {
+          preset: { id, label: name, matchNames: [] },
+          partIds: live,
+          missingCount: missing > 0 ? missing : undefined,
+        },
+      ]
     })
   }, [model, stored])
 

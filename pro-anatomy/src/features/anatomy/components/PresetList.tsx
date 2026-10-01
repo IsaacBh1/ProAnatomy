@@ -1,5 +1,5 @@
-import { X } from '@phosphor-icons/react'
-import { Button, CheckboxRow } from '@/components/ui'
+import { WarningCircle, X } from '@phosphor-icons/react'
+import { Button, CheckboxRow, Tooltip } from '@/components/ui'
 import type { AvailablePreset } from '../types'
 
 interface PresetListProps {
@@ -14,7 +14,7 @@ interface PresetListProps {
 export function PresetList({ items, activeIds, customIds, onToggle, onRemove }: PresetListProps) {
   return (
     <div className="flex flex-col gap-2">
-      {items.map(({ preset, partIds }) => (
+      {items.map(({ preset, partIds, missingCount }) => (
         <CheckboxRow
           key={preset.id}
           label={preset.label}
@@ -22,15 +22,31 @@ export function PresetList({ items, activeIds, customIds, onToggle, onRemove }: 
           checked={activeIds.includes(preset.id)}
           onCheckedChange={() => onToggle(preset.id)}
           trailing={
-            customIds.has(preset.id) ? (
-              <Button
-                icon={X}
-                aria-label={`Delete preset ${preset.label}`}
-                title="Delete preset"
-                onClick={() => onRemove(preset.id)}
-                className="size-6"
-              />
-            ) : null
+            <>
+              {missingCount !== undefined && (
+                <Tooltip
+                  label={`${missingCount} part${missingCount === 1 ? '' : 's'} no longer exist in this model`}
+                  side="top"
+                >
+                  <span
+                    role="status"
+                    aria-label={`${missingCount} parts missing`}
+                    className="grid size-6 place-items-center text-amber-400"
+                  >
+                    <WarningCircle size={14} aria-hidden />
+                  </span>
+                </Tooltip>
+              )}
+              {customIds.has(preset.id) && (
+                <Button
+                  icon={X}
+                  aria-label={`Delete preset ${preset.label}`}
+                  title="Delete preset"
+                  onClick={() => onRemove(preset.id)}
+                  className="size-6"
+                />
+              )}
+            </>
           }
         />
       ))}

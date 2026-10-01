@@ -4,26 +4,29 @@ import type { Note, NoteInput } from '../types'
 
 interface NotesState {
   notes: readonly Note[]
-  /** True once the first `load()` resolves. */
+  /** True once the first `load()` has resolved, success or not. */
   ready: boolean
   load: () => Promise<void>
   create: (input: NoteInput) => Promise<Note>
   update: (id: string, patch: Partial<NoteInput>) => Promise<Note | null>
   remove: (id: string) => Promise<void>
+  /** Clears all state. Called on sign-out so the sidebar can't leak another account's data. */
+  reset: () => void
 }
 
-/**
- * Thin cache over the repository. Reads are synchronous; writes go through and re-read.
- * No optimistic updates yet — the local repo is instant, and when the backend arrives,
- * optimistic writes become the natural next step *here and nowhere else*.
- */
 export const useNotesStore = create<NotesState>()((set, get) => ({
   notes: [],
   ready: false,
 
   load: async () => {
-    const notes = await notesRepository.list()
-    set({ notes, ready: true })
+    try {
+      const notes = await notesRepository.list()
+      set({ notes, ready: true })
+    } catch {
+      // Signed out, offline, or the server is down. Either way: no notes, and
+      // the app stays usable. The next successful `load()` reconciles.
+      set({ notes: [], ready: true })
+    }
   },
 
   create: async (input) => {
@@ -43,4 +46,6 @@ export const useNotesStore = create<NotesState>()((set, get) => ({
     await notesRepository.remove(id)
     set({ notes: get().notes.filter((n) => n.id !== id) })
   },
+
+  reset: () => set({ notes: [], ready: false }),
 }))

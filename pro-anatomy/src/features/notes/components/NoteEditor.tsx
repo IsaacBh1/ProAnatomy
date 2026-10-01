@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { Trash, X } from '@phosphor-icons/react'
 import { Button } from '@/components/ui'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useAnatomyModel } from '@/features/anatomy/hooks/useAnatomyModel'
 import { useAnatomyStore } from '@/store/anatomyStore'
+import { cn } from '@/utils/cn'
 import { useNote } from '../hooks/useNotes'
 import { deleteNote, saveNote } from '../services/noteCommands'
 import { useNotesUiStore } from '../store/notesUiStore'
@@ -20,6 +22,7 @@ const handleActivate = (fn: () => void) => (event: KeyboardEvent) => {
 }
 
 export function NoteEditor() {
+  const isDesktop = useIsDesktop()
   const target = useNotesUiStore((state) => state.target)
   const close = useNotesUiStore((state) => state.close)
   const note = useNote(target?.kind === 'note' ? target.id : null)
@@ -35,9 +38,9 @@ export function NoteEditor() {
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
   /**
-   * Existing notes open read-only so the user reads them; drafts open ready to type because
-   * there's nothing to read. Clicking the title or body in read mode enters edit mode with
-   * focus on whichever was clicked.
+   * Existing notes open read-only so the user reads them; drafts open ready to
+   * type because there's nothing to read. Clicking title or body in read mode
+   * enters edit mode with focus on whichever was clicked.
    */
   const [editing, setEditing] = useState(false)
   const titleRef = useRef<HTMLInputElement>(null)
@@ -59,12 +62,12 @@ export function NoteEditor() {
       setEditing(true)
       nextFocusRef.current = 'title'
     }
-    // `note` is intentionally omitted: it changes when we save, and re-running here would
-    // clobber the user's in-progress edits with the saved version.
+    // `note` is intentionally omitted: it changes when we save, and re-running
+    // would clobber the user's in-progress edits with the saved version.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target])
 
-  // Focus the right field when entering edit mode. Runs after the reset effect above.
+  // Focus the right field when entering edit mode. Runs after the reset effect.
   useEffect(() => {
     if (!editing) return
     const frame = requestAnimationFrame(() => {
@@ -81,8 +84,8 @@ export function NoteEditor() {
     return () => cancelAnimationFrame(frame)
   }, [editing, target])
 
-  // Esc and Cmd/Ctrl+Enter, registered on window so they work even when focus is on the
-  // header buttons. saveRef keeps the handler stable while `save` changes.
+  // Esc and Cmd/Ctrl+Enter, registered on window so they work even when focus
+  // is on the header buttons. saveRef keeps the handler stable while `save` changes.
   const saveRef = useRef<() => void>(() => {})
   useEffect(() => {
     if (!target) return
@@ -119,7 +122,6 @@ export function NoteEditor() {
     const saved = await saveNote(target, { title, body })
     if (!saved) return
     if (target.kind === 'draft') {
-      // Transition the drawer to the freshly created note; the reset effect above takes over.
       useNotesUiStore.getState().openNote(saved.id)
     } else {
       setEditing(false)
@@ -137,16 +139,32 @@ export function NoteEditor() {
       ref={asideRef}
       role="complementary"
       aria-label="Note editor"
-      style={{ width: DRAWER_WIDTH }}
-      // Focus leaving the drawer falls back to read mode, but only for an existing note with
-      // no unsaved changes. Drafts stay editable and dirty notes keep their edits.
+      // Width is a fixed column on desktop; on mobile the sheet is full-bleed.
+      style={isDesktop ? { width: DRAWER_WIDTH } : undefined}
+      // Focus leaving the drawer falls back to read mode, but only for an
+      // existing note with no unsaved changes. Drafts stay editable and dirty
+      // notes keep their edits.
       onBlur={(event) => {
         const next = event.relatedTarget as Node | null
         if (asideRef.current?.contains(next)) return
         if (target.kind === 'note' && !dirty) setEditing(false)
       }}
-      className="pointer-events-auto absolute top-[86px] right-6 bottom-[120px] z-20 flex flex-col rounded-2xl border border-border bg-surface shadow-xl"
+      className={cn(
+        'pointer-events-auto z-20 flex flex-col border-border bg-surface shadow-xl',
+        isDesktop
+          ? 'absolute top-[86px] right-6 bottom-[120px] rounded-2xl border'
+          : // Bottom sheet: dvh so iOS Safari's URL bar doesn't clip it.
+            'fixed inset-x-0 bottom-0 h-[70dvh] rounded-t-2xl border-t',
+      )}
     >
+      {!isDesktop && (
+        // Sheet affordance: a small grab handle so the shape reads as a sheet,
+        // not a mistake.
+        <div aria-hidden className="flex justify-center pt-2 pb-1">
+          <span className="h-1 w-10 rounded-full bg-border" />
+        </div>
+      )}
+
       <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <NoteAnchorChip anchor={anchor} nameOf={nameOf} />
@@ -233,10 +251,7 @@ export function NoteEditor() {
         ) : (
           <>
             <span className="text-[10px] text-muted">Esc to close</span>
-            <Button
-              onClick={() => enterEdit('body')}
-              className="border border-border px-4"
-            >
+            <Button onClick={() => enterEdit('body')} className="border border-border px-4">
               Edit
             </Button>
           </>

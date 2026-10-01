@@ -8,9 +8,13 @@ export interface CaptureOptions {
 }
 
 /**
- * Renders the current view into a new canvas.
- *
- * Async because the drawing overlay is composited from a serialised SVG → Image, which
- * resolves on the microtask queue. Everything else (WebGL capture) is still synchronous.
+ * What a capture produces: the rendered canvas plus any non-fatal problems the
+ * caller should tell the user about (e.g. the drawing overlay couldn't be
+ * serialised). The capture itself always succeeds — warnings are informational.
  */
-export type CaptureFn = (options: CaptureOptions) => Promise<HTMLCanvasElement>
+export interface CaptureResult {
+  canvas: HTMLCanvasElement
+  warnings: readonly string[]
+}
+
+export type CaptureFn = (options: CaptureOptions) => Promise<CaptureResult>

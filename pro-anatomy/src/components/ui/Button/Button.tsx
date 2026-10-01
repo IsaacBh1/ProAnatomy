@@ -1,25 +1,29 @@
 import type { ButtonHTMLAttributes } from 'react'
 import type { Icon } from '@phosphor-icons/react'
+import { Slot } from '@radix-ui/react-slot'
 import { cn } from '@/utils/cn'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: Icon
   active?: boolean
+  asChild?: boolean
 }
 
 export function Button({
   icon: IconComponent,
   active = false,
+  asChild = false,
   type = 'button',
   className,
   children,
   ...rest
 }: ButtonProps) {
-  const iconOnly = !children
+  const Comp = asChild ? Slot : 'button'
+  const iconOnly = !children && !asChild
 
   return (
-    <button
-      type={type}
+    <Comp
+      type={asChild ? undefined : type}
       data-active={active || undefined}
       className={cn(
         'inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full text-sm text-content transition-colors',
@@ -33,6 +37,6 @@ export function Button({
     >
       {IconComponent && <IconComponent size={16} aria-hidden />}
       {children}
-    </button>
+    </Comp>
   )
 }

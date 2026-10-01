@@ -13,7 +13,7 @@ export type ToolbarItem =
 export interface OrganPreset {
   id: string
   label: string
-  /** Lower-case compound-organ names to look up in the BodyParts3D data (used in Milestone 4). */
+  /** Lower-case compound-organ names to look up in the BodyParts3D data. */
   matchNames: readonly string[]
 }
 
@@ -21,6 +21,11 @@ export interface OrganPreset {
 export interface AvailablePreset {
   preset: OrganPreset
   partIds: readonly string[]
+  /**
+   * How many of the preset's original parts are absent from the loaded model.
+   * Undefined (or 0) means nothing has drifted.
+   */
+  missingCount?: number
 }
 
 export type CommandState = Partial<

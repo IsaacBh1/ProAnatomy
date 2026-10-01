@@ -79,6 +79,21 @@ export function createHraGlbSource({ url, dracoDecoderPath }: HraGlbOptions): An
         const gltf = await loader.loadAsync(url)
         signal?.throwIfAborted()
         return toAnatomyModel(gltf.scene)
+      } catch (error) {
+        // Draco decoding failures surface as opaque WebAssembly errors deep inside
+        // the loader. Recognise them and re-throw with the decoder path in the
+        // message — otherwise "Could not load model" tells the user nothing and
+        // the actual cause (missing /draco/ files, wrong MIME type on the .wasm,
+        // CORS) is invisible.
+        const message = error instanceof Error ? error.message : String(error)
+        if (/draco|wasm|WebAssembly/i.test(message)) {
+          throw new Error(
+            `Draco decoder could not load from "${dracoDecoderPath}". ` +
+              `Check that draco_decoder.js and draco_decoder.wasm are reachable. ` +
+              `Original error: ${message}`,
+          )
+        }
+        throw error
       } finally {
         draco.dispose()
       }

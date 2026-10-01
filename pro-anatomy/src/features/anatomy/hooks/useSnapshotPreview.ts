@@ -22,7 +22,7 @@ export function useSnapshotPreview(
 
     void (async () => {
       try {
-        const canvas = await capture({ scale: 1, includeLabels, transparent, watermark })
+        const { canvas } = await capture({ scale: 1, includeLabels, transparent, watermark })
         if (cancelled) return
         const blob = await canvasToBlob(canvas)
         if (cancelled) return

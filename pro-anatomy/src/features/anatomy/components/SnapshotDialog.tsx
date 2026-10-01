@@ -24,7 +24,7 @@ const RESOLUTIONS = [
 ]
 
 interface Status {
-  tone: 'ok' | 'error'
+  tone: 'ok' | 'warn' | 'error'
   message: string
 }
 
@@ -51,10 +51,14 @@ function SnapshotForm({ onClose }: { onClose: () => void }) {
     setBusy(true)
     setStatus(null)
     try {
-      const canvas = await capture(options)
+      const { canvas, warnings } = await capture(options)
       const blob = await canvasToBlob(canvas)
       await task(blob)
-      setStatus({ tone: 'ok', message: success })
+      if (warnings.length > 0) {
+        setStatus({ tone: 'warn', message: `${success} — ${warnings.join(' ')}` })
+      } else {
+        setStatus({ tone: 'ok', message: success })
+      }
     } catch (error) {
       setStatus({
         tone: 'error',
@@ -128,7 +132,12 @@ function SnapshotForm({ onClose }: { onClose: () => void }) {
       <div className="flex items-center gap-2">
         <p
           role="status"
-          className={cn('mr-auto text-xs', status?.tone === 'error' ? 'text-red-400' : 'text-muted')}
+          className={cn(
+            'mr-auto text-xs',
+            status?.tone === 'error' && 'text-red-400',
+            status?.tone === 'warn' && 'text-amber-400',
+            (!status || status.tone === 'ok') && 'text-muted',
+          )}
         >
           {status?.message}
         </p>

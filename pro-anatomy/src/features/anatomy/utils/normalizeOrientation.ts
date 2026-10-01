@@ -2,8 +2,15 @@ import { Box3, Vector3 } from 'three'
 import type { AnatomyPart } from '../types/model'
 
 /**
- * Rotates all geometries in place so the body's longest axis is Y (up).
- * Both prototypes did this at runtime by rotating the scene root.
+ * Rotates all geometries in place so the body's longest axis is Y (up). Both
+ * prototypes did this at runtime by rotating the scene root.
+ *
+ * ASSUMPTION: the input is a *whole body*, so its longest bounding-box axis is
+ * unambiguously the head-to-toe axis. This is only correct because we call it
+ * once on the full model at load time. If you ever feed a sub-assembly (an
+ * isolated arm, a single organ), the longest axis will often be the wrong one
+ * and the piece will be rotated onto its side. Don't call this from anywhere
+ * other than `loadAnatomyModel`.
  */
 export function normalizeOrientation(parts: readonly AnatomyPart[]): void {
   const bounds = new Box3()

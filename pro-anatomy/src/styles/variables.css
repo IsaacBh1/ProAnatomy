@@ -8,6 +8,28 @@
   --color-border: #3a3a3a;
   --color-content: #d0d0d0;
   --color-muted: #a0a0a0;
+
+  /*
+   * Display scale for hero copy — the auth panel today, a landing page later.
+   * Named by role, not by pixel count, so the intent survives a redesign:
+   * "this is a hero heading" is a better contract than "this is 48px".
+   *
+   * Each size uses clamp() so it scales with the viewport between a floor and
+   * a ceiling. On a 1280px laptop the heading lands around 40px; on a 2560px
+   * monitor it tops out at 60px. The middle vw term is what does the work.
+   */
+  --text-display-sm: clamp(1.5rem, 1.8vw, 2rem);
+  --text-display-sm--line-height: 1.2;
+  --text-display-md: clamp(2rem, 2.6vw, 2.75rem);
+  --text-display-md--line-height: 1.15;
+  --text-display-lg: clamp(2.5rem, 3.4vw, 3.75rem);
+  --text-display-lg--line-height: 1.08;
+  --text-display-xl: clamp(3rem, 4.5vw, 5rem);
+  --text-display-xl--line-height: 1.02;
+
+  /* Long-form copy that pairs with a display heading. */
+  --text-display-body: clamp(1rem, 1.1vw, 1.25rem);
+  --text-display-body--line-height: 1.6;
 }
 
 /* Light theme. Applied by <html data-theme="light">. */

@@ -18,8 +18,16 @@ interface UiState {
   snapshotOpen: boolean
   autoRotate: boolean
   calloutIds: ReadonlySet<string>
+  /**
+   * How many native <dialog> elements are currently open. A counter rather than a
+   * boolean because two modals can overlap. Shortcut handlers read this instead
+   * of running `querySelector('dialog[open]')` on every keystroke.
+   */
+  dialogCount: number
 
   toggleSidebar: () => void
+  /** Idempotent. Use this from the mobile backdrop, which must not toggle. */
+  setSidebarOpen: (open: boolean) => void
   setActiveTool: (tool: ToolId) => void
   setViewerMode: (mode: ViewerMode) => void
   toggleViewerMode: () => void
@@ -32,6 +40,8 @@ interface UiState {
   removeCallout: (id: string) => void
   toggleCallout: (id: string) => void
   clearCallouts: () => void
+  pushDialog: () => void
+  popDialog: () => void
 }
 
 export const useUiStore = create<UiState>()((set) => ({
@@ -43,8 +53,11 @@ export const useUiStore = create<UiState>()((set) => ({
   snapshotOpen: false,
   autoRotate: false,
   calloutIds: NO_IDS,
+  dialogCount: 0,
 
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
+  setSidebarOpen: (sidebarOpen) =>
+    set((s) => (s.sidebarOpen === sidebarOpen ? s : { sidebarOpen })),
   setActiveTool: (activeTool) => set({ activeTool }),
   setViewerMode: (viewerMode) => set({ viewerMode }),
   toggleViewerMode: () =>
@@ -78,4 +91,7 @@ export const useUiStore = create<UiState>()((set) => ({
     else useUiStore.getState().addCallout(id)
   },
   clearCallouts: () => set((s) => (s.calloutIds.size === 0 ? s : { calloutIds: NO_IDS })),
+
+  pushDialog: () => set((s) => ({ dialogCount: s.dialogCount + 1 })),
+  popDialog: () => set((s) => ({ dialogCount: Math.max(0, s.dialogCount - 1) })),
 }))

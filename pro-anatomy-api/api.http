@@ -1,0 +1,39 @@
+@baseUrl = http://localhost:4000/api
+@email = ada@example.com
+@password = hunter22hunter22
+
+### Health — should be 200 { ok: true }
+GET {{baseUrl}}/health
+
+### Readiness — checks the DB
+GET {{baseUrl}}/health/ready
+
+### Sign up
+# @name signup
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Ada Lovelace",
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Log in
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Who am I — uses the cookie the login set
+GET {{baseUrl}}/auth/me
+
+### Refresh
+POST {{baseUrl}}/auth/refresh
+
+### Log out
+POST {{baseUrl}}/auth/logout

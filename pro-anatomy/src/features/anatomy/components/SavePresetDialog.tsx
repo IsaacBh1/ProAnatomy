@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Button, Input, Modal } from '@/components/ui'
-import { createPresetId, useCustomPresetsStore } from '../store/customPresetsStore'
+import { useCustomPresetsStore } from '../store/customPresetsStore'
 import { usePresetDraftStore } from '../store/presetDraftStore'
 
 interface FormProps {
@@ -14,8 +14,9 @@ function SavePresetForm({ partIds, onCancel, onSave }: FormProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    // After the parent Modal's showModal(): the browser's own "dialog focusing steps" would
-    // otherwise land on the header's close button before we get a chance.
+    // After the parent Modal's showModal(): the browser's own "dialog focusing
+    // steps" would otherwise land on the header's close button before we get
+    // a chance.
     const frame = requestAnimationFrame(() => inputRef.current?.focus())
     return () => cancelAnimationFrame(frame)
   }, [])
@@ -62,9 +63,10 @@ function SavePresetForm({ partIds, onCancel, onSave }: FormProps) {
 }
 
 /**
- * The naming step. Opened either from the draft bar (after picking in the viewer) or directly
- * from a right-click on a selection / the P shortcut. Closing it just clears `pendingIds`;
- * whether that returns the user to collecting or to idle is decided by the draft store.
+ * The naming step. Opened either from the draft bar (after picking in the
+ * viewer) or directly from a right-click on a selection / the P shortcut.
+ * Closing it just clears `pendingIds`; whether that returns the user to
+ * collecting or to idle is decided by the draft store.
  */
 export function SavePresetDialog() {
   const pendingIds = usePresetDraftStore((state) => state.pendingIds)
@@ -75,13 +77,12 @@ export function SavePresetDialog() {
 
   const save = (name: string) => {
     if (!pendingIds) return
-    useCustomPresetsStore.getState().add({
-      id: createPresetId(),
-      name,
-      partIds: pendingIds,
-      createdAt: Date.now(),
-    })
-    reset()
+    void (async () => {
+      const preset = await useCustomPresetsStore.getState().add({ name, partIds: pendingIds })
+      // Only close on success: a rejected save keeps the dialog open so the
+      // name the user typed is not thrown away.
+      if (preset) reset()
+    })()
   }
 
   return (
@@ -91,7 +92,7 @@ export function SavePresetDialog() {
       title="Save preset"
       description="Name this collection so you can recall it later."
     >
-      {/* Mounted only while open: every opening starts with an empty field and fresh focus. */}
+      {/* Mounted only while open: every opening starts with an empty field. */}
       {open && pendingIds && (
         <SavePresetForm partIds={pendingIds} onCancel={closeNaming} onSave={save} />
       )}
