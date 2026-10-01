@@ -1,7 +1,6 @@
 // src/features/drawing/components/LayersPanel.tsx
 import {
   Stack,
-  Eye,
   ArrowUp,
   ArrowDown,
   ArrowsDownUp,
@@ -37,7 +36,6 @@ export function LayersPanel() {
   const bringForward = useDrawingStore((s) => s.bringForward)
   const sendBackward = useDrawingStore((s) => s.sendBackward)
   const bringToFront = useDrawingStore((s) => s.bringToFront)
-  const sendToBack = useDrawingStore((s) => s.sendToBack)
   const deleteElements = useDrawingStore((s) => s.deleteElements)
 
   const reversed = [...elements].reverse()

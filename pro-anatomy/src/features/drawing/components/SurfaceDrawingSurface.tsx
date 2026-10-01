@@ -1,7 +1,7 @@
 // src/features/drawing/components/SurfaceDrawingSurface.tsx
 import { useEffect } from 'react'
 import { useThree } from '@react-three/fiber'
-import { Plane, Raycaster, Vector2, Vector3, type Object3D } from 'three'
+import { PerspectiveCamera, Plane, Raycaster, Vector2, Vector3, type Object3D } from 'three'
 import { SURFACE_TOOLS } from '../constants'
 import { useDrawingStore } from '../store/drawingStore'
 import { useUiStore } from '@/store/uiStore'
@@ -31,17 +31,6 @@ interface Props {
   root: Object3D
 }
 
-/**
- * Pointer interactions for the 3D surface layer, active only when the drawing
- * space is `surface` and the current tool is one of `SURFACE_TOOLS`.
- *
- *   brush   — raycasts against the model, accumulating points into a stroke
- *   eraser  — raycasts against existing surface strokes and deletes the pick
- *   edit    — picks a stroke, selects it, then drag-translates it (and every
- *             other selected stroke) on a plane facing the camera
- *
- * Other tools are handled by the screen-space layer or by OrbitControls.
- */
 export function SurfaceDrawingSurface({ root }: Props) {
   const gl = useThree((s) => s.gl)
   const camera = useThree((s) => s.camera)
@@ -90,7 +79,7 @@ export function SurfaceDrawingSurface({ root }: Props) {
       setPointer(event)
       return pickSurfaceStroke(
         raycaster,
-        camera,
+        camera as PerspectiveCamera,
         useDrawingStore.getState().surfaceStrokes,
         PICK_THRESHOLD_PX,
         size.height,

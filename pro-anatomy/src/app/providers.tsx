@@ -1,6 +1,5 @@
 import { useEffect, type ReactNode } from 'react'
 import { QueryClientProvider } from '@tanstack/react-query'
-import { useAnatomyModel } from '@/features/anatomy/hooks/useAnatomyModel'
 import { useCustomPresetsStore } from '@/features/anatomy/store/customPresetsStore'
 import { useAuthStore } from '@/features/auth'
 import { useNotesStore } from '@/features/notes/store/notesStore'
