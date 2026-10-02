@@ -1,6 +1,3 @@
-cd /home/isaac/source/repos/ProAnatomy
-
-cat > README.md << 'EOF'
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./pro-anatomy/src/assets/images/logo.svg">
   <source media="(prefers-color-scheme: light)" srcset="./pro-anatomy/src/assets/images/logo-light.svg">
@@ -129,4 +126,3 @@ Source is MIT. The anatomical models keep their original licenses — see above.
 ## Feedback
 
 If you're studying anatomy and something is missing, named wrong, or grouped badly — open an issue or send me a message. That's the whole reason this exists, and the small stuff matters more than you'd think.
-EOF
