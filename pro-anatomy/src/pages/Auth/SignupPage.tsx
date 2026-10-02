@@ -54,7 +54,7 @@ export default function SignupPage() {
       password,
     })
 
-    if (!result.ok) {
+    if ("error" in result) {
       if (result.error.code === 'email_taken') {
         setErrors((prev) => ({ ...prev, email: result.error.message }))
       } else {

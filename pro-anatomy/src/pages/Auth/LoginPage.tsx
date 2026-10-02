@@ -39,7 +39,7 @@ export default function LoginPage() {
     if (nextErrors.email || nextErrors.password) return
 
     const result = await signIn({ email, password })
-    if (!result.ok) {
+    if ("error" in result) {
       setFormError(result.error.message)
       return
     }
