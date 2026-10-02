@@ -4,21 +4,10 @@ import { cn } from '@/utils/cn'
 
 interface SidebarProps {
   open: boolean
-  /** Called when the mobile backdrop is tapped. Ignored on desktop. */
   onClose?: () => void
   children: ReactNode
 }
 
-/**
- * Themed, collapsible sidebar.
- *
- * Two layouts, one component:
- *   • desktop (≥ md) — in-flow column that animates its own width to 0
- *   • mobile (< md)  — fixed drawer that slides in from the left, over a scrim
- *
- * The transition property differs by mode: desktop animates `width`, mobile
- * animates `transform`. Sharing one would animate the wrong thing on one side.
- */
 export function Sidebar({ open, onClose, children }: SidebarProps) {
   const isDesktop = useIsDesktop()
 
