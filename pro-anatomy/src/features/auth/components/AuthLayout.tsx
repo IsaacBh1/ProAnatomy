@@ -1,4 +1,3 @@
-// src/features/auth/components/AuthLayout.tsx
 import type { ReactNode } from 'react'
 import { BrandLogo } from '@/components/layout'
 

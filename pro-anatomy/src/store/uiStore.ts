@@ -1,4 +1,3 @@
-// src/store/uiStore.ts
 import { create } from 'zustand'
 import type { ToolId } from '@/types/anatomy'
 

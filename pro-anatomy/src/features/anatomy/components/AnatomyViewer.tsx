@@ -1,4 +1,3 @@
-// src/features/anatomy/components/AnatomyViewer.tsx
 import { useEffect, useMemo } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { useDrawingStore } from '@/features/drawing/store/drawingStore'

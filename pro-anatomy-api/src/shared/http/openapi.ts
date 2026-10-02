@@ -1,4 +1,3 @@
-// src/shared/http/openapi.ts
 import { OpenApiGeneratorV31, OpenAPIRegistry, extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import { z } from 'zod'
 import { loginSchema, signupSchema } from '../../features/auth/auth.schemas'
@@ -7,7 +6,6 @@ extendZodWithOpenApi(z)
 
 const registry = new OpenAPIRegistry()
 
-// ── Helpers ────────────────────────────────────────────────────────────────
 
 const jsonError = (description: string) => ({
   description,
@@ -19,7 +17,6 @@ const jsonOk = <T extends z.ZodTypeAny>(description: string, schema: T) => ({
   content: { 'application/json': { schema } },
 })
 
-// ── Shared shapes ──────────────────────────────────────────────────────────
 
 const UserPublic = registry.register(
   'User',
@@ -41,10 +38,6 @@ const ErrorBody = registry.register(
   }),
 )
 
-/**
- * NoteAnchor — discriminated by `kind`, matching the client's union at
- * src/features/notes/types.ts.
- */
 const Anchor = registry.register(
   'NoteAnchor',
   z.discriminatedUnion('kind', [
@@ -76,7 +69,6 @@ const Preset = registry.register(
   }),
 )
 
-// ── Auth ───────────────────────────────────────────────────────────────────
 
 registry.registerPath({
   method: 'post',
@@ -139,7 +131,6 @@ registry.registerPath({
   },
 })
 
-// ── Health ─────────────────────────────────────────────────────────────────
 
 registry.registerPath({
   method: 'get',
@@ -163,13 +154,6 @@ registry.registerPath({
   },
 })
 
-// ── Notes ──────────────────────────────────────────────────────────────────
-//
-// Response shapes inferred from the client's NotesRepository interface at
-// src/features/notes/types.ts. If the server serialises timestamps as epoch
-// milliseconds instead of ISO strings, swap `.datetime()` for `.number()` in
-// the `Note` schema above. `tsc --noEmit` will not catch that — it's a runtime
-// shape, not a type. Check `/api/notes` in the browser once and compare.
 
 registry.registerPath({
   method: 'get',
@@ -255,12 +239,6 @@ registry.registerPath({
   },
 })
 
-// ── Presets ────────────────────────────────────────────────────────────────
-//
-// Response shapes inferred from src/features/anatomy/types/presets.ts.
-// `partIds` are BodyParts3D element ids (e.g. FJ1234) for the male model, or
-// ontology ids for the female GLB — the API treats them as opaque strings.
-
 registry.registerPath({
   method: 'get',
   path: '/presets',
@@ -340,12 +318,6 @@ registry.registerPath({
   },
 })
 
-// ── Users ──────────────────────────────────────────────────────────────────
-//
-// The client only talks to /auth/me today, so this section is a best guess at
-// what a users router would expose. If users.routes.ts contains nothing, delete
-// this block AND remove `{ name: 'users', … }` from the tags array below — the
-// group will vanish from the docs.
 
 registry.registerPath({
   method: 'get',
@@ -399,7 +371,6 @@ registry.registerPath({
   },
 })
 
-// ── Components ─────────────────────────────────────────────────────────────
 
 registry.registerComponent('securitySchemes', 'cookieAuth', {
   type: 'apiKey',
@@ -409,7 +380,6 @@ registry.registerComponent('securitySchemes', 'cookieAuth', {
     'Session cookie set by /auth/login or /auth/signup. Rotated by /auth/refresh.',
 })
 
-// ── Spec ───────────────────────────────────────────────────────────────────
 
 export function buildOpenApiDocument() {
   const generator = new OpenApiGeneratorV31(registry.definitions)

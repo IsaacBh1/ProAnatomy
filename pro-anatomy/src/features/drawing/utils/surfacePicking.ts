@@ -1,4 +1,3 @@
-// src/features/drawing/utils/surfacePicking.ts
 import { Vector3, type PerspectiveCamera, type Raycaster } from 'three'
 import type { SurfaceStroke } from '../types'
 

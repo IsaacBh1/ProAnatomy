@@ -1,4 +1,3 @@
-// src/pages/Anatomy/AnatomyPage.tsx
 import { List, Stack } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Button, Pill, Tooltip } from '@/components/ui'

@@ -1,4 +1,3 @@
-// src/features/auth/components/GoogleButton.tsx
 import { GoogleLogo } from '@phosphor-icons/react'
 
 interface GoogleButtonProps {

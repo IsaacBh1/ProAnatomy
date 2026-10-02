@@ -1,4 +1,3 @@
-// src/features/drawing/hooks/useDrawingInteractions.ts
 import { useEffect, type RefObject } from 'react'
 import { HANDLE_HIT } from '../constants'
 import { useDrawingStore, createId } from '../store/drawingStore'

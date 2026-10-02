@@ -1,4 +1,3 @@
-// src/features/anatomy/components/SnapshotDialog.tsx
 import { useState } from 'react'
 import { Copy, DownloadSimple } from '@phosphor-icons/react'
 import { Button, CheckboxRow, Input, Modal, Select } from '@/components/ui'

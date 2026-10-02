@@ -1,4 +1,3 @@
-// src/features/drawing/index.ts
 export { DrawingCanvas } from './components/DrawingCanvas'
 export { DrawingLayer } from './components/DrawingLayer'
 export { DrawingToolbar } from './components/DrawingToolbar'

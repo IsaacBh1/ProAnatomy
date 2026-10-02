@@ -1,4 +1,3 @@
-// src/features/anatomy/types/snapshot.ts
 export interface CaptureOptions {
   /** Multiplier of the on-screen size. Clamped to what the GPU supports. */
   scale: number

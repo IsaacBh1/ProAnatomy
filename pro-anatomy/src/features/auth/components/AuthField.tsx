@@ -1,4 +1,3 @@
-// src/features/auth/components/AuthField.tsx
 import { useId, type ComponentPropsWithRef } from 'react'
 import { cn } from '@/utils/cn'
 

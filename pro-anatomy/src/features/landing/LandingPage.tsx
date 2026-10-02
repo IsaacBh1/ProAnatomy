@@ -1,4 +1,3 @@
-// src/features/landing/LandingPage.tsx
 import { motion } from 'framer-motion'
 import {
   ArrowRight,
@@ -280,7 +279,7 @@ export function LandingPage() {
             />
             <div className="relative flex flex-col items-center gap-6">
               <h2 className="max-w-[18ch] font-display text-display-lg font-medium tracking-tight text-balance">
-                See the whole body. Keep every note.
+                See the whole body, Keep every note.
               </h2>
               <p className="max-w-lg text-display-body text-muted">
                 A free account unlocks the viewer, both models, the drawing tools, and

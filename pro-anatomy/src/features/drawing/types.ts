@@ -1,4 +1,3 @@
-// src/features/drawing/types.ts
 export type ElementId = string
 export type DashStyle = 'solid' | 'dashed' | 'dotted'
 

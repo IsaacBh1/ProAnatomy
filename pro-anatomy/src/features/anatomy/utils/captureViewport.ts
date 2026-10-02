@@ -1,4 +1,3 @@
-// src/features/anatomy/utils/captureViewport.ts
 import { Vector2, type Camera, type Scene, type WebGLRenderer } from 'three'
 import { readCssVar } from '@/utils/cssVar'
 import type { LabelItem } from '../types/labels'

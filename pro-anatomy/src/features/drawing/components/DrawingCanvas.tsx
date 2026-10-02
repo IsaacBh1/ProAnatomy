@@ -1,4 +1,3 @@
-// src/features/drawing/components/DrawingCanvas.tsx
 import { useRef } from 'react'
 import { ELEMENT_TOOLS } from '../constants'
 import { useDrawingStore } from '../store/drawingStore'
@@ -8,18 +7,6 @@ import { DrawingLayer } from './DrawingLayer'
 import { SelectionOverlay } from './SelectionOverlay'
 import { TextEditor } from './TextEditor'
 
-/**
- * SVG overlay. The wrapper is `pointer-events: none` so every gesture (drawing,
- * picking, band select, orbit) is dispatched to the WebGL canvas underneath.
- * `useDrawingInteractions` decides, per pointerdown, whether to claim it.
- *
- * The screen layer only handles screen-space gestures. When the drawing space is
- * `surface`, `SurfaceDrawingSurface` owns the pointer instead — the two are
- * mutually exclusive by design, so the screen layer simply doesn't bind.
- *
- * The `<TextEditor>` is a plain sibling: its `<input>` re-enables pointer events
- * itself (see TextEditor.tsx), so it's clickable and focusable like any DOM input.
- */
 export function DrawingCanvas() {
   const containerRef = useRef<HTMLDivElement>(null)
   const viewerMode = useUiStore((s) => s.viewerMode)

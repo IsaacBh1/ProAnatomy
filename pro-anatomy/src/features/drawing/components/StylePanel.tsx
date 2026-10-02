@@ -1,4 +1,3 @@
-// src/features/drawing/components/StylePanel.tsx
 import { Palette, LineSegments, Drop } from '@phosphor-icons/react'
 import { Pill } from '@/components/ui'
 import { PALETTE, STROKE_WIDTHS } from '../constants'

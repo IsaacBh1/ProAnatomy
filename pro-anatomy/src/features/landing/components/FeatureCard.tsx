@@ -1,4 +1,3 @@
-// src/features/landing/components/FeatureCard.tsx
 import { motion } from 'framer-motion'
 import type { Icon } from '@phosphor-icons/react'
 import { revealItem } from './motion'
@@ -8,12 +7,6 @@ interface FeatureCardProps {
   title: string
   body: string
 }
-
-/**
- * A feature tile. Reveals as part of a staggered grid (parent supplies the
- * variants), and lifts 2px on hover — the smallest amount of motion that still
- * reads as "this is interactive".
- */
 export function FeatureCard({ icon: Icon, title, body }: FeatureCardProps) {
   return (
     <motion.article

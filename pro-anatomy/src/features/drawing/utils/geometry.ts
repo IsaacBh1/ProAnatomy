@@ -1,4 +1,3 @@
-// src/features/drawing/utils/geometry.ts
 import { HIT_TOLERANCE } from '../constants'
 import type {
   Bbox,

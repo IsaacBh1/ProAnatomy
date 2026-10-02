@@ -1,4 +1,3 @@
-// src/features/drawing/components/ViewerModeToggle.tsx
 import { BookOpen, PaintBrush } from '@phosphor-icons/react'
 import type { Icon } from '@phosphor-icons/react'
 import { Button, Pill } from '@/components/ui'

@@ -1,4 +1,3 @@
-// src/pages/Auth/SignupPage.tsx
 import { useState, type FormEvent } from 'react'
 import { WarningCircle } from '@phosphor-icons/react'
 import { Link, useNavigate } from 'react-router-dom'

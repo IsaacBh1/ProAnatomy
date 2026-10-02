@@ -1,4 +1,3 @@
-// src/features/drawing/components/ElementRenderer.tsx
 import { memo } from 'react'
 import type { DrawElement } from '../types'
 import { freehandToSvgPath } from '../utils/freehand'

@@ -1,4 +1,3 @@
-// src/features/drawing/components/SurfaceDrawingSurface.tsx
 import { useEffect } from 'react'
 import { useThree } from '@react-three/fiber'
 import { PerspectiveCamera, Plane, Raycaster, Vector2, Vector3, type Object3D } from 'three'

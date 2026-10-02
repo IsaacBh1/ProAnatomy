@@ -1,4 +1,3 @@
-// src/features/anatomy/components/ModelScene.tsx
 import { useEffect, useMemo, useRef } from 'react'
 import { OrbitControls } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'

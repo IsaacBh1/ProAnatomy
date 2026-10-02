@@ -1,4 +1,3 @@
-// src/features/drawing/store/drawingStore.ts
 import { create } from 'zustand'
 import { DEFAULT_FONT_SIZE, DEFAULT_STYLE } from '../constants'
 import type {

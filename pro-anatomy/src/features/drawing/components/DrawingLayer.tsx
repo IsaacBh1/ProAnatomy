@@ -1,4 +1,3 @@
-// src/features/drawing/components/DrawingLayer.tsx
 import { useDrawingStore } from '../store/drawingStore'
 import { ElementRenderer } from './ElementRenderer'
 

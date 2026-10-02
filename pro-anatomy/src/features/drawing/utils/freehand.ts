@@ -1,4 +1,3 @@
-// src/features/drawing/utils/freehand.ts
 import { getStroke } from 'perfect-freehand'
 
 /**

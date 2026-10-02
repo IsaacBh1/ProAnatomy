@@ -1,4 +1,3 @@
-// src/features/auth/components/AccountFooter.tsx
 import { SignOut } from '@phosphor-icons/react'
 import { Button } from '@/components/ui'
 import { useAuthStore } from '../store/authStore'

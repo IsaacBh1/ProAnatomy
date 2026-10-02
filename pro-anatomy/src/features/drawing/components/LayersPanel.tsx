@@ -1,4 +1,3 @@
-// src/features/drawing/components/LayersPanel.tsx
 import {
   Stack,
   ArrowUp,

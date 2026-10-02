@@ -1,4 +1,3 @@
-// src/features/drawing/constants.ts
 import type { ElementStyle, ToolId } from './types'
 
 export const PALETTE = [

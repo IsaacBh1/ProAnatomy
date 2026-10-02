@@ -1,5 +1,3 @@
-// src/features/anatomy/types/presets.ts
-/** A user-defined preset: a name plus the parts it isolates. */
 export interface CustomPreset {
   id: string
   name: string

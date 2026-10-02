@@ -1,4 +1,3 @@
-// src/features/anatomy/hooks/useSnapshotPreview.ts
 import { useEffect, useState } from 'react'
 import { canvasToBlob } from '../services/snapshot'
 import type { CaptureFn, CaptureOptions } from '../types/snapshot'

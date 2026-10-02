@@ -1,17 +1,7 @@
-// src/features/drawing/components/SelectionOverlay.tsx
 import { HANDLE_SIZE } from '../constants'
 import { useDrawingStore } from '../store/drawingStore'
 import { handlesOf, unionBbox } from '../utils/geometry'
 
-/**
- * Visual-only overlay: dashed bounding box around the current selection, plus a
- * resize handle per control point of the (single) selected element. Handles are
- * not interactive in the DOM — `useDrawingInteractions` does the hit-testing
- * with `handlesOf()` so all pointer logic stays in one place.
- *
- * `pointerEvents: none` on the wrapper: the SVG must stay invisible to the
- * pointer so the WebGL canvas underneath keeps receiving gestures.
- */
 export function SelectionOverlay() {
   const selectedIds = useDrawingStore((s) => s.selectedIds)
   const elements = useDrawingStore((s) => s.elements)

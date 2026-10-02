@@ -1,22 +1,7 @@
-// src/lib/api/session.ts
 import { config } from '@/app/config'
 import type { User } from '@/features/auth/types'
 import { ApiError, type ApiErrorBody, type ApiFieldError } from './errors'
 
-/**
- * One place that owns the access token and knows how to refresh it.
- *
- * Why the token lives here and not in a store:
- *   - it is a secret, so it should sit as close to the fetch call as possible;
- *   - it is 15-minute-lived, so persisting it would only widen the window an
- *     XSS could impersonate the user.
- *
- * Why we never touch localStorage for auth:
- *   The credential that actually mints sessions — the refresh token — is an
- *   httpOnly cookie set by the API. JavaScript cannot read it, cannot exfiltrate
- *   it, and cannot replay it from another origin. Trading a silent round-trip on
- *   boot for that property is the whole point.
- */
 
 interface AuthResponse {
   user: User
@@ -28,7 +13,6 @@ export interface Session {
   accessToken: string
 }
 
-// ─── State ───────────────────────────────────────────────────────────────
 
 let currentSession: Session | null = null
 const sessionListeners = new Set<(session: Session | null) => void>()
@@ -42,7 +26,6 @@ export function getSession(): Session | null {
   return currentSession
 }
 
-/** Fires on every login, refresh and logout. */
 export function subscribeSession(listener: (session: Session | null) => void): () => void {
   sessionListeners.add(listener)
   return () => {
@@ -50,7 +33,6 @@ export function subscribeSession(listener: (session: Session | null) => void): (
   }
 }
 
-// ─── Error parsing ───────────────────────────────────────────────────────
 
 async function toApiError(response: Response): Promise<ApiError> {
   let code = 'internal_error'
@@ -71,12 +53,9 @@ async function toApiError(response: Response): Promise<ApiError> {
   return new ApiError(response.status, code, message, details)
 }
 
-// ─── Fetch with bearer + cookies ─────────────────────────────────────────
 
 interface RequestOptions extends Omit<RequestInit, 'body'> {
-  /** Serialised to JSON as the request body. Omit for GET / DELETE. */
   body?: unknown
-  /** Do not attempt refresh-and-retry on 401. Set for /auth/* calls. */
   skipRefresh?: boolean
 }
 
@@ -98,17 +77,10 @@ async function rawRequest(path: string, init: RequestOptions): Promise<Response>
     ...init,
     headers,
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
-    // The refresh cookie is path-scoped to /api/auth, so it is only ever sent
-    // on those routes. `include` is simply the flag that lets a cross-origin
-    // request set and receive cookies at all.
     credentials: 'include',
   })
 }
 
-/**
- * Authenticated fetch. Adds the bearer, sends cookies, and on 401 tries one
- * silent refresh before propagating the failure.
- */
 export async function apiRequest<T>(path: string, init: RequestOptions = {}): Promise<T> {
   let response = await rawRequest(path, init)
 
@@ -126,22 +98,8 @@ export async function apiRequest<T>(path: string, init: RequestOptions = {}): Pr
   return (await response.json()) as T
 }
 
-// ─── Refresh (single-flight) ─────────────────────────────────────────────
-//
-// The API rotates the refresh cookie on every call. Two concurrent refreshes
-// would race: the second one presents a cookie the first has already burned.
-// Every caller for the duration of one in-flight request shares this promise.
-
 let refreshPromise: Promise<Session | null> | null = null
 
-/**
- * Exchange the httpOnly refresh cookie for a fresh access token.
- *
- *   - resolves with the session on success,
- *   - resolves with null when there is no valid cookie (signed out) — this is
- *     a normal state, not an error,
- *   - rejects only when the network itself failed.
- */
 export function refreshSession(): Promise<Session | null> {
   if (refreshPromise) return refreshPromise
 
@@ -163,7 +121,6 @@ export function refreshSession(): Promise<Session | null> {
     return session
   })()
 
-  // Clear the shared promise once it settles, pass or fail.
   refreshPromise.finally(() => {
     refreshPromise = null
   })
@@ -171,7 +128,6 @@ export function refreshSession(): Promise<Session | null> {
   return refreshPromise
 }
 
-// ─── Auth flows ──────────────────────────────────────────────────────────
 
 export async function signIn(email: string, password: string): Promise<Session> {
   const data = await apiRequest<AuthResponse>('/auth/login', {
@@ -203,8 +159,6 @@ export async function signOut(): Promise<void> {
   try {
     await apiRequest<void>('/auth/logout', { method: 'POST', skipRefresh: true })
   } finally {
-    // Local state is cleared even if the API call failed. The server-side
-    // session will time out on its own.
     setSession(null)
   }
 }

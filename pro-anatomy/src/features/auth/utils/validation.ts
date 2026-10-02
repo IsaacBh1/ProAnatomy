@@ -1,4 +1,3 @@
-// src/features/auth/utils/validation.ts
 export const MIN_PASSWORD_LENGTH = 8
 export const MAX_NAME_LENGTH = 60
 

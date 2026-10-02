@@ -1,4 +1,3 @@
-// src/features/auth/components/OrDivider.tsx
 
 /** A hairline rule with a centered label. Separates the OAuth button from the form. */
 export function OrDivider({ label = 'or' }: { label?: string }) {

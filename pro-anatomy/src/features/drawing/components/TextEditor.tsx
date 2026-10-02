@@ -1,4 +1,3 @@
-// src/features/drawing/components/TextEditor.tsx
 import { useEffect, useRef, useState } from 'react'
 import { useDrawingStore } from '../store/drawingStore'
 import type { TextElement } from '../types'

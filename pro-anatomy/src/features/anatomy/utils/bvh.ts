@@ -1,4 +1,3 @@
-// src/features/anatomy/utils/bvh.ts
 import { BufferGeometry, Mesh } from 'three'
 import {
   acceleratedRaycast,

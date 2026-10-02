@@ -1,4 +1,3 @@
-// src/features/anatomy/hooks/useViewerShortcuts.ts
 import { useEffect } from 'react'
 import { useDrawingStore } from '@/features/drawing/store/drawingStore'
 import type { ToolId as DrawToolId } from '@/features/drawing/types'

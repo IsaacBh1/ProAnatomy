@@ -1,4 +1,3 @@
-// src/features/drawing/components/DrawingToolbar.tsx
 import {
   PaintBrush,
   Eraser,

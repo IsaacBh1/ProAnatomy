@@ -1,4 +1,3 @@
-// src/features/anatomy/hooks/usePartPicking.ts
 import { useEffect } from 'react'
 import { useThree } from '@react-three/fiber'
 import { Raycaster, Vector2, type Object3D } from 'three'

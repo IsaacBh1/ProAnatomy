@@ -1,4 +1,3 @@
-// src/features/anatomy/hooks/useCaptureApi.ts
 import { useEffect } from 'react'
 import { useThree } from '@react-three/fiber'
 import { useCaptureStore } from '../store/captureStore'

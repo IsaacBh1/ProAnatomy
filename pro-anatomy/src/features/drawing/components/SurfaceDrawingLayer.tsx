@@ -1,4 +1,3 @@
-// src/features/drawing/components/SurfaceDrawingLayer.tsx
 import { useEffect } from 'react'
 import { useThree } from '@react-three/fiber'
 import { Line } from '@react-three/drei'
