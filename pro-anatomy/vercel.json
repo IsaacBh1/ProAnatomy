@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/((?!api/|draco/|models/|assets/|@).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
